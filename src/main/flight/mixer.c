@@ -825,8 +825,8 @@ void mixTable(void)
             for (i = 0; i < motorCount; i++) {
                 rollPitchYawMix[i] =  lrintf((float) rollPitchYawMix[i] * mixReduction);
             }
-            // Get the maximum correction by setting throtte offset to center. Configurable limit will constrain values once limit exceeded to prevent spazzing out in crashes
-            if (mixReduction > (mixerConfig->airmode_saturation_limit / 100.0f)) throttleMin = throttleMax = throttleMin + (throttleRange / 2);
+
+            throttleMin = throttleMax = throttleMin + (throttleRange / 2);
         } else {
             motorLimitReached = false;
             throttleMin = throttleMin + (rollPitchYawMixRange / 2);
