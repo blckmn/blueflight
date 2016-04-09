@@ -70,7 +70,10 @@ typedef struct mixer_s {
 } mixer_t;
 
 typedef struct mixerConfig_s {
-    int8_t yaw_motor_direction;
+	uint8_t mixerMode;
+	uint8_t pid_at_min_throttle;            // when enabled pids are used at minimum throttle
+	uint8_t airmode_saturation_limit;       // Use max possible correction when within the limit
+	int8_t yaw_motor_direction;
     uint16_t yaw_jump_prevention_limit;      // make limit configurable (original fixed value was 100)
 #ifdef USE_SERVOS
     uint8_t tri_unarmed_servo;              // send tail servo correction pulses even when unarmed
