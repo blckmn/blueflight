@@ -412,6 +412,7 @@ COMMON_SRC = \
 		   common/encoding.c \
 		   common/filter.c \
 		   scheduler.c \
+		   scheduler_tasks.c \
 		   main.c \
 		   mw.c \
 		   flight/altitudehold.c \

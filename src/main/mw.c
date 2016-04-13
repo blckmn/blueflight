@@ -333,7 +333,7 @@ void annexCode(void)
             DISABLE_ARMING_FLAG(OK_TO_ARM);
         }
 
-        if (isCalibrating() || (averageWaitingTasks100 > 1000)) {
+        if (isCalibrating() || (averageSystemLoadPercent > 100)) {
             warningLedFlash();
             DISABLE_ARMING_FLAG(OK_TO_ARM);
         } else {
@@ -807,23 +807,22 @@ void taskMainPidLoopCheck(void) {
         }
     }
 
-
     taskMainPidLoop();
-
 }
 
-void taskUpdateAccelerometer(void)
-{
+void taskUpdateAccelerometer(void) {
     imuUpdateAccelerometer(&currentProfile->accelerometerTrims);
 }
 
-void taskHandleSerial(void)
-{
+void taskUpdateAttitude(void) {
+    imuUpdateAttitude();
+}
+
+void taskHandleSerial(void) {
     handleSerial();
 }
 
-void taskUpdateBeeper(void)
-{
+void taskUpdateBeeper(void) {
     beeperUpdate();          //call periodic beeper handler
 }
 
