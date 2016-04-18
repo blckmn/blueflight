@@ -17,6 +17,8 @@
 
 
 /* this holds the data required to update samples thru a filter */
+#pragma once
+
 typedef struct biquad_s {
     float a0, a1, a2, a3, a4;
     float x1, x2, y1, y2;

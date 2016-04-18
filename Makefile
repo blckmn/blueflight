@@ -271,11 +271,12 @@ DEVICE_STDPERIPH_SRC = $(STDPERIPH_SRC)
 
 else
 
-STDPERIPH_DIR	 = $(ROOT)/lib/main/STM32F10x_StdPeriph_Driver
+STDPERIPH_DIR = $(ROOT)/lib/main/STM32F10x_StdPeriph_Driver
 
 STDPERIPH_SRC = $(notdir $(wildcard $(STDPERIPH_DIR)/src/*.c))
 
-EXCLUDES	= stm32f10x_crc.c \
+EXCLUDES = \
+		stm32f10x_crc.c \
 		stm32f10x_cec.c \
 		stm32f10x_can.c
 
@@ -418,6 +419,8 @@ COMMON_SRC = \
 		   flight/altitudehold.c \
 		   flight/failsafe.c \
 		   flight/pid.c \
+		   flight/pid_mwrewrite.c \
+		   flight/pid_luxfloat.c \
 		   flight/imu.c \
 		   flight/mixer.c \
 		   flight/lowpass.c \
