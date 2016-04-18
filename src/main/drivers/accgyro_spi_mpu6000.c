@@ -112,8 +112,8 @@ bool mpu6000WriteRegister(uint8_t reg, uint8_t data)
 {
     ENABLE_MPU6000;
     delayMicroseconds(1);
-    spiTransferByte(MPU6000_SPI_INSTANCE, reg);
-    spiTransferByte(MPU6000_SPI_INSTANCE, data);
+    spiTransferByte(MPU6000_SPI_DEVICE, reg);
+    spiTransferByte(MPU6000_SPI_DEVICE, data);
     DISABLE_MPU6000;
     delayMicroseconds(1);
 
@@ -123,8 +123,8 @@ bool mpu6000WriteRegister(uint8_t reg, uint8_t data)
 bool mpu6000ReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
     ENABLE_MPU6000;
-    spiTransferByte(MPU6000_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU6000_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU6000_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU6000_SPI_DEVICE, data, NULL, length);
     DISABLE_MPU6000;
 
     return true;
@@ -134,8 +134,8 @@ bool mpu6000SlowReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
     ENABLE_MPU6000;
     delayMicroseconds(1);
-    spiTransferByte(MPU6000_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU6000_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU6000_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU6000_SPI_DEVICE, data, NULL, length);
     DISABLE_MPU6000;
     delayMicroseconds(1);
 
@@ -149,15 +149,15 @@ void mpu6000SpiGyroInit(uint8_t lpf)
 
     mpu6000AccAndGyroInit(lpf);
 
-    spiResetErrorCounter(MPU6000_SPI_INSTANCE);
+    spiResetErrorCounter(MPU6000_SPI_DEVICE);
 
-    spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_FAST_CLOCK); //high speed now that we don't need to write to the slow registers
+    spiSetDivisor(MPU6000_SPI_DEVICE, SPI_FAST_CLOCK); //high speed now that we don't need to write to the slow registers
 
     int16_t data[3];
     mpuGyroRead(data);
 
-    if ((((int8_t)data[1]) == -1 && ((int8_t)data[0]) == -1) || spiGetErrorCounter(MPU6000_SPI_INSTANCE) != 0) {
-        spiResetErrorCounter(MPU6000_SPI_INSTANCE);
+    if ((((int8_t)data[1]) == -1 && ((int8_t)data[0]) == -1) || spiGetErrorCounter(MPU6000_SPI_DEVICE) != 0) {
+        spiResetErrorCounter(MPU6000_SPI_DEVICE);
         failureMode(FAILURE_GYRO_INIT_FAILED);
     }
 }
@@ -196,7 +196,7 @@ static void mpu6000AccAndGyroInit(uint8_t lpf) {
 		return;
 	}
 
-    spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_SLOW_CLOCK); //low speed for writing to slow registers
+    spiSetDivisor(MPU6000_SPI_DEVICE, SPI_SLOW_CLOCK); //low speed for writing to slow registers
 
     mpu6000WriteRegister(MPU_RA_PWR_MGMT_1, BIT_H_RESET);
 	delay(50);
@@ -251,10 +251,11 @@ bool mpu6000SpiDetect(void)
 
 #ifdef MPU6000_CS_PIN     
     mpuSpi6000CsPin = IOGetByTag(IO_TAG(MPU6000_CS_PIN));
-#endif    IOInit(mpuSpi6000CsPin, OWNER_SYSTEM, RESOURCE_SPI);
+#endif
+    IOInit(mpuSpi6000CsPin, OWNER_SYSTEM, RESOURCE_SPI);
     IOConfigGPIO(mpuSpi6000CsPin, SPI_IO_CS_CFG);
     
-    spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_SLOW_CLOCK); //low speed
+    spiSetDivisor(MPU6000_SPI_DEVICE, SPI_SLOW_CLOCK); //low speed
 
     mpu6000WriteRegister(MPU_RA_PWR_MGMT_1, BIT_H_RESET);
 
@@ -301,7 +302,7 @@ static void mpu6000AccAndGyroInit(void) {
         return;
     }
 
-    spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_SLOW_CLOCK);
+    spiSetDivisor(MPU6000_SPI_DEVICE, SPI_SLOW_CLOCK);
 
     // Device Reset
     mpu6000WriteRegister(MPU_RA_PWR_MGMT_1, BIT_H_RESET);
@@ -343,7 +344,7 @@ static void mpu6000AccAndGyroInit(void) {
     delayMicroseconds(15);
 #endif
 
-    spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_FAST_CLOCK);  // 18 MHz SPI clock
+    spiSetDivisor(MPU6000_SPI_DEVICE, SPI_FAST_CLOCK);  // 18 MHz SPI clock
     delayMicroseconds(1);
 
     mpuSpi6000InitDone = true;

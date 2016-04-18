@@ -41,14 +41,14 @@
 #define USE_SPI
 #define USE_SPI_DEVICE_2
 
-#define NAZE_SPI_INSTANCE     SPI2
+#define NAZE_SPI_DEVICE     SPIDEV_2
 #define NAZE_SPI_CS_PIN       PB12
 
 // We either have this 16mbit flash chip on SPI or the MPU6500 acc/gyro depending on board revision:
 #define M25P16_CS_PIN         NAZE_SPI_CS_PIN
-#define M25P16_SPI_INSTANCE   NAZE_SPI_INSTANCE
+#define M25P16_SPI_DEVICE     NAZE_SPI_DEVICE
 #define MPU6500_CS_PIN                   NAZE_SPI_CS_PIN
-#define MPU6500_SPI_INSTANCE             NAZE_SPI_INSTANCE
+#define MPU6500_SPI_DEVICE               NAZE_SPI_DEVICE
 
 
 #define USE_FLASHFS

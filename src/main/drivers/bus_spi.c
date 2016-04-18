@@ -98,14 +98,28 @@ SPIDevice spiDeviceByInstance(SPI_TypeDef *instance)
     return SPIINVALID;
 }
 
+SPI_TypeDef* spiInstance(SPIDevice device)
+{
+    if (device == SPIDEV_1) 
+        return SPI1;
+
+    if (device == SPIDEV_2)
+        return SPI2;
+
+    if (device == SPIDEV_3)
+        return SPI3;
+
+    return NULL;    
+}
+
 void spiInitDevice(SPIDevice device)
 {
     SPI_InitTypeDef spiInit;
 
     spiDevice_t *spi = &(spiHardwareMap[device]);
 
-#ifdef SDCARD_SPI_INSTANCE
-    if (spi->dev == SDCARD_SPI_INSTANCE)
+#ifdef SDCARD_SPI_DEVICE
+    if (device == SDCARD_SPI_DEVICE)
         spi->sdcard = true;
 #endif
 
@@ -211,10 +225,11 @@ uint32_t spiTimeoutUserCallback(SPI_TypeDef *instance)
 }
 
 // return uint8_t value or -1 when failure
-uint8_t spiTransferByte(SPI_TypeDef *instance, uint8_t data)
+uint8_t spiTransferByte(SPIDevice device, uint8_t data)
 {
     uint16_t spiTimeout = 1000;
-
+	SPI_TypeDef *instance = spiHardwareMap[device].dev;
+    
     while (SPI_I2S_GetFlagStatus(instance, SPI_I2S_FLAG_TXE) == RESET)
         if ((spiTimeout--) == 0)
             return spiTimeoutUserCallback(instance);
@@ -239,8 +254,10 @@ uint8_t spiTransferByte(SPI_TypeDef *instance, uint8_t data)
 /**
  * Return true if the bus is currently in the middle of a transmission.
  */
-bool spiIsBusBusy(SPI_TypeDef *instance)
+bool spiIsBusBusy(SPIDevice device)
 {
+    SPI_TypeDef *instance = spiHardwareMap[device].dev;
+
 #ifdef STM32F303xC
     return SPI_GetTransmissionFIFOStatus(instance) != SPI_TransmissionFIFOStatus_Empty || SPI_I2S_GetFlagStatus(instance, SPI_I2S_FLAG_BSY) == SET;
 #else
@@ -249,9 +266,10 @@ bool spiIsBusBusy(SPI_TypeDef *instance)
 
 }
 
-bool spiTransfer(SPI_TypeDef *instance, uint8_t *out, const uint8_t *in, int len)
+bool spiTransfer(SPIDevice device, uint8_t *out, const uint8_t *in, int len)
 {
     uint16_t spiTimeout = 1000;
+    SPI_TypeDef *instance = spiHardwareMap[device].dev;
 
     uint8_t b;
     instance->DR;
@@ -286,11 +304,12 @@ bool spiTransfer(SPI_TypeDef *instance, uint8_t *out, const uint8_t *in, int len
 }
 
 
-void spiSetDivisor(SPI_TypeDef *instance, uint16_t divisor)
+void spiSetDivisor(SPIDevice device, uint16_t divisor)
 {
 #define BR_CLEAR_MASK 0xFFC7
 
     uint16_t tempRegister;
+    SPI_TypeDef *instance = spiHardwareMap[device].dev;
 
     SPI_Cmd(instance, DISABLE);
 
@@ -343,17 +362,16 @@ void spiSetDivisor(SPI_TypeDef *instance, uint16_t divisor)
     SPI_Cmd(instance, ENABLE);
 }
 
-uint16_t spiGetErrorCounter(SPI_TypeDef *instance)
+uint16_t spiGetErrorCounter(SPIDevice device)
 {
-    SPIDevice device = spiDeviceByInstance(instance);
     if (device == SPIINVALID)
         return 0;
     return spiHardwareMap[device].errorCount;
 }
 
-void spiResetErrorCounter(SPI_TypeDef *instance)
+void spiResetErrorCounter(SPIDevice device)
 {
-    SPIDevice device = spiDeviceByInstance(instance);
     if (device != SPIINVALID)
         spiHardwareMap[device].errorCount = 0;
 }
+

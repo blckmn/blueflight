@@ -33,7 +33,7 @@
 #define BEEPER PA0
 
 #define MPU9250_CS_PIN        PE10
-#define MPU9250_SPI_INSTANCE  SPI2
+#define MPU9250_SPI_DEVICE    SPIDEV_2
 
 #define ACC
 #define USE_ACC_MPU9250
@@ -67,7 +67,7 @@
 
 /*
 #define M25P16_CS_PIN         PB3
-#define M25P16_SPI_INSTANCE   SPI3
+#define M25P16_SPI_DEVICE     SPIDEV_3
 
 #define USE_FLASHFS
 #define USE_FLASH_M25P16

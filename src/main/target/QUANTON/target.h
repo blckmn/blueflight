@@ -26,7 +26,7 @@
 #define LED1 PC14
 
 #define MPU6000_CS_PIN        PC4
-#define MPU6000_SPI_INSTANCE  SPI1
+#define MPU6000_SPI_DEVICE    SPIDEV_1
 
 #define ACC
 #define USE_ACC_MPU6000
@@ -43,7 +43,7 @@
 //#define MS5611_I2C_INSTANCE I2CDEV_1
 
 //#define M25P16_CS_PIN         PB12
-//#define M25P16_SPI_INSTANCE   SPI3
+//#define M25P16_SPI_DEVICE   SPI3
 
 //#define USE_FLASHFS
 //#define USE_FLASH_M25P16

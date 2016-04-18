@@ -71,9 +71,9 @@ static IO_t mpuSpil3gd20CsPin = IO_NONE;
 
 #define BOOT                          ((uint8_t)0x80)
 
-static void l3gd20SpiInit(SPI_TypeDef *SPIx)
+static void l3gd20SpiInit(SPIDevice *device)
 {
-    UNUSED(SPIx); // FIXME
+	UNUSED(device); // FIXME
 
 #ifdef L3GD20_CS_PIN
     mpuSpil3gd20CsPin = IOGetByTag(IO_TAG(L3GD20_CS_PIN));

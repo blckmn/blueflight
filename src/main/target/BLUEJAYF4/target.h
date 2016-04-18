@@ -41,7 +41,7 @@
 #define LED2 PB5
 
 #define MPU9250_CS_PIN        PC4
-#define MPU9250_SPI_INSTANCE  SPI1
+#define MPU9250_SPI_DEVICE      (SPIDEV_1)
 
 #define ACC
 #define USE_ACC_MPU9250
@@ -70,7 +70,7 @@
 #define SDCARD_DETECT_EXTI_PORT_SOURCE      EXTI_PortSourceGPIOD
 #define SDCARD_DETECT_EXTI_IRQn             EXTI2_IRQn
 
-#define SDCARD_SPI_INSTANCE                 SPI3
+#define SDCARD_SPI_DEVICE                   SPIDEV_3
 #define SDCARD_SPI_CS_PIN                   PA15
 
 // SPI2 is on the APB1 bus whose clock runs at 84MHz. Divide to under 400kHz for init:
@@ -86,8 +86,8 @@
 // Performance logging for SD card operations:
 // #define AFATFS_USE_INTROSPECTIVE_LOGGING
 
-#define M25P16_CS_PIN         PB3
-#define M25P16_SPI_INSTANCE   SPI3
+#define M25P16_CS_PIN       PB3
+#define M25P16_SPI_DEVICE   SPIDEV_3
 
 #define USE_FLASHFS
 #define USE_FLASH_M25P16

@@ -34,7 +34,7 @@
 #define BEEPER_INVERTED
 
 #define MPU6500_CS_PIN                   PA4
-#define MPU6500_SPI_INSTANCE             SPI1
+#define MPU6500_SPI_DEVICE               SPIDEV_1
 
 #define USE_SPI
 #define USE_SPI_DEVICE_1

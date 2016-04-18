@@ -69,11 +69,13 @@ typedef struct SPIDevice_s {
 } spiDevice_t;
 
 bool spiInit(SPIDevice device);
-void spiSetDivisor(SPI_TypeDef *instance, uint16_t divisor);
-uint8_t spiTransferByte(SPI_TypeDef *instance, uint8_t in);
-bool spiIsBusBusy(SPI_TypeDef *instance);
+void spiSetDivisor(SPIDevice device, uint16_t divisor);
+uint8_t spiTransferByte(SPIDevice device, uint8_t in);
+bool spiIsBusBusy(SPIDevice device);
 
-bool spiTransfer(SPI_TypeDef *instance, uint8_t *out, const uint8_t *in, int len);
+bool spiTransfer(SPIDevice device, uint8_t *out, const uint8_t *in, int len);
 
-uint16_t spiGetErrorCounter(SPI_TypeDef *instance);
-void spiResetErrorCounter(SPI_TypeDef *instance);
+uint16_t spiGetErrorCounter(SPIDevice device);
+void spiResetErrorCounter(SPIDevice device);
+
+SPI_TypeDef* spiInstance(SPIDevice device);

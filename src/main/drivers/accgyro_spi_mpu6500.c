@@ -45,8 +45,8 @@ bool mpu6500WriteRegister(uint8_t reg, uint8_t data)
 {
     ENABLE_MPU6500;
     delayMicroseconds(1);
-    spiTransferByte(MPU6500_SPI_INSTANCE, reg);
-    spiTransferByte(MPU6500_SPI_INSTANCE, data);
+    spiTransferByte(MPU6500_SPI_DEVICE, reg);
+    spiTransferByte(MPU6500_SPI_DEVICE, data);
     DISABLE_MPU6500;
     delayMicroseconds(1);
 
@@ -75,8 +75,8 @@ bool verifympu6500WriteRegister(uint8_t reg, uint8_t data) {
 bool mpu6500ReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
     ENABLE_MPU6500;
-    spiTransferByte(MPU6500_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU6500_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU6500_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU6500_SPI_DEVICE, data, NULL, length);
     DISABLE_MPU6500;
 
     return true;
@@ -86,8 +86,8 @@ bool mpu6500SlowReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
     ENABLE_MPU6500;
     delayMicroseconds(1);
-    spiTransferByte(MPU6500_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU6500_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU6500_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU6500_SPI_DEVICE, data, NULL, length);
     delayMicroseconds(1);
     DISABLE_MPU6500;
 
@@ -107,9 +107,9 @@ static void mpu6500SpiInit(void)
 	IOConfigGPIO(mpuSpi6500CsPin, SPI_IO_CS_CFG);
 
 #if defined(STM32F4)
-    spiSetDivisor(MPU6500_SPI_INSTANCE, SPI_SLOW_CLOCK);
+    spiSetDivisor(MPU6500_SPI_DEVICE, SPI_SLOW_CLOCK);
 #else
-    spiSetDivisor(MPU6500_SPI_INSTANCE, SPI_STANDARD_CLOCK);
+    spiSetDivisor(MPU6500_SPI_DEVICE, SPI_STANDARD_CLOCK);
 #endif
 
     hardwareInitialised = true;

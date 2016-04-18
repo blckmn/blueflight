@@ -37,7 +37,7 @@
 #define INVERTER_USART USART2 //Sbus on USART 2 of nano.
 
 #define MPU9250_CS_PIN        PB12
-#define MPU9250_SPI_INSTANCE  SPI2
+#define MPU9250_SPI_DEVICE    SPIDEV_2
 
 #define ACC
 #define USE_ACC_MPU9250

@@ -53,7 +53,7 @@
 #define SDCARD_DETECT_EXTI_PORT_SOURCE       EXTI_PortSourceGPIOC
 #define SDCARD_DETECT_EXTI_IRQn              EXTI15_10_IRQn
 
-#define SDCARD_SPI_INSTANCE                  SPI2
+#define SDCARD_SPI_DEVICE                    SPIDEV_2
 #define SDCARD_SPI_CS_PIN                    PB12
 
 // SPI2 is on the APB1 bus whose clock runs at 36MHz. Divide to under 400kHz for init:
@@ -70,7 +70,7 @@
 
 //#define M25P16_CS_GPIO          GPIOB
 //#define M25P16_CS_PIN           GPIO_Pin_12
-//#define M25P16_SPI_INSTANCE     SPI2
+//#define M25P16_SPI_DEVICE       SPIDEV_2
 
 #define GYRO
 #define USE_GYRO_L3GD20

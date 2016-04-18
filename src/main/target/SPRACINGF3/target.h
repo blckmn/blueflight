@@ -109,7 +109,7 @@
 #define SPI2_MOSI_PIN           PB15
 
 #define M25P16_CS_PIN           PB12
-#define M25P16_SPI_INSTANCE     SPI2
+#define M25P16_SPI_DEVICE       SPIDEV_2
 
 #define USE_ADC
 #define BOARD_HAS_VOLTAGE_DIVIDER

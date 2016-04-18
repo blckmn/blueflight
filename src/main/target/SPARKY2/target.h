@@ -41,7 +41,7 @@
 #define INVERTER_USART USART6
 
 #define MPU9250_CS_PIN        PC4
-#define MPU9250_SPI_INSTANCE  SPI1
+#define MPU9250_SPI_DEVICE    SPIDEV_1
 
 #define ACC
 #define USE_ACC_MPU9250
@@ -60,11 +60,11 @@
 #define USE_BARO_MS5611
 
 #define M25P16_CS_PIN         PB3
-#define M25P16_SPI_INSTANCE   SPI3
+#define M25P16_SPI_DEVICE     SPIDEV_3
 
 //#define RFM22B_CS_GPIO        GPIOA
 //#define RFM22B_CS_PIN         GPIO_Pin_15
-//#define RFM22B_SPI_INSTANCE   SPI3
+//#define RFM22B_SPI_DEVICE     SPIDEV_3
 
 #define USE_FLASHFS
 #define USE_FLASH_M25P16

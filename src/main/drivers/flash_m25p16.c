@@ -73,7 +73,7 @@ static void m25p16_performOneByteCommand(uint8_t command)
 {
     ENABLE_M25P16;
 
-    spiTransferByte(M25P16_SPI_INSTANCE, command);
+    spiTransferByte(M25P16_SPI_DEVICE, command);
 
     DISABLE_M25P16;
 }
@@ -97,7 +97,7 @@ static uint8_t m25p16_readStatus()
 
     ENABLE_M25P16;
 
-    spiTransfer(M25P16_SPI_INSTANCE, in, command, sizeof(command));
+    spiTransfer(M25P16_SPI_DEVICE, in, command, sizeof(command));
 
     DISABLE_M25P16;
 
@@ -144,7 +144,7 @@ static bool m25p16_readIdentification()
 
     ENABLE_M25P16;
 
-    spiTransfer(M25P16_SPI_INSTANCE, in, out, sizeof(out));
+    spiTransfer(M25P16_SPI_DEVICE, in, out, sizeof(out));
 
     // Clearing the CS bit terminates the command early so we don't have to read the chip UID:
     DISABLE_M25P16;
@@ -202,7 +202,7 @@ bool m25p16_init()
 	IOConfigGPIO(flashSpim25p16CsPin, SPI_IO_CS_CFG);
         
     //Maximum speed for standard READ command is 20mHz, other commands tolerate 25mHz
-    spiSetDivisor(M25P16_SPI_INSTANCE, SPI_ULTRAFAST_CLOCK);
+    spiSetDivisor(M25P16_SPI_DEVICE, SPI_ULTRAFAST_CLOCK);
 
     return m25p16_readIdentification();
 }
@@ -220,7 +220,7 @@ void m25p16_eraseSector(uint32_t address)
 
     ENABLE_M25P16;
 
-    spiTransfer(M25P16_SPI_INSTANCE, NULL, out, sizeof(out));
+    spiTransfer(M25P16_SPI_DEVICE, NULL, out, sizeof(out));
 
     DISABLE_M25P16;
 }
@@ -244,12 +244,12 @@ void m25p16_pageProgramBegin(uint32_t address)
 
     ENABLE_M25P16;
 
-    spiTransfer(M25P16_SPI_INSTANCE, NULL, command, sizeof(command));
+    spiTransfer(M25P16_SPI_DEVICE, NULL, command, sizeof(command));
 }
 
 void m25p16_pageProgramContinue(const uint8_t *data, int length)
 {
-    spiTransfer(M25P16_SPI_INSTANCE, NULL, data, length);
+    spiTransfer(M25P16_SPI_DEVICE, NULL, data, length);
 }
 
 void m25p16_pageProgramFinish()
@@ -299,8 +299,8 @@ int m25p16_readBytes(uint32_t address, uint8_t *buffer, int length)
 
     ENABLE_M25P16;
 
-    spiTransfer(M25P16_SPI_INSTANCE, NULL, command, sizeof(command));
-    spiTransfer(M25P16_SPI_INSTANCE, buffer, NULL, length);
+    spiTransfer(M25P16_SPI_DEVICE, NULL, command, sizeof(command));
+    spiTransfer(M25P16_SPI_DEVICE, buffer, NULL, length);
 
     DISABLE_M25P16;
 

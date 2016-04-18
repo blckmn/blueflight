@@ -65,8 +65,8 @@ bool mpu9250WriteRegister(uint8_t reg, uint8_t data)
 {
 	ENABLE_MPU9250;
     delayMicroseconds(1);
-    spiTransferByte(MPU9250_SPI_INSTANCE, reg);
-    spiTransferByte(MPU9250_SPI_INSTANCE, data);
+    spiTransferByte(MPU9250_SPI_DEVICE, reg);
+    spiTransferByte(MPU9250_SPI_DEVICE, data);
     DISABLE_MPU9250;
     delayMicroseconds(1);
 
@@ -76,8 +76,8 @@ bool mpu9250WriteRegister(uint8_t reg, uint8_t data)
 bool mpu9250ReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
 	ENABLE_MPU9250;
-    spiTransferByte(MPU9250_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU9250_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU9250_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU9250_SPI_DEVICE, data, NULL, length);
     DISABLE_MPU9250;
 
     return true;
@@ -87,8 +87,8 @@ bool mpu9250SlowReadRegister(uint8_t reg, uint8_t length, uint8_t *data)
 {
 	ENABLE_MPU9250;
     delayMicroseconds(1);
-    spiTransferByte(MPU9250_SPI_INSTANCE, reg | 0x80); // read transaction
-    spiTransfer(MPU9250_SPI_INSTANCE, data, NULL, length);
+    spiTransferByte(MPU9250_SPI_DEVICE, reg | 0x80); // read transaction
+    spiTransfer(MPU9250_SPI_DEVICE, data, NULL, length);
     DISABLE_MPU9250;
     delayMicroseconds(1);
 
@@ -103,15 +103,15 @@ void mpu9250SpiGyroInit(uint8_t lpf)
 
     mpu9250AccAndGyroInit(lpf);
 
-    spiResetErrorCounter(MPU9250_SPI_INSTANCE);
+    spiResetErrorCounter(MPU9250_SPI_DEVICE);
 
-    spiSetDivisor(MPU9250_SPI_INSTANCE, SPI_ULTRAFAST_CLOCK); //high speed now that we don't need to write to the slow registers
+    spiSetDivisor(MPU9250_SPI_DEVICE, SPI_ULTRAFAST_CLOCK); //high speed now that we don't need to write to the slow registers
 
     int16_t data[3];
     mpuGyroRead(data);
 
-    if ((((int8_t)data[1]) == -1 && ((int8_t)data[0]) == -1) || spiGetErrorCounter(MPU9250_SPI_INSTANCE) != 0) {
-        spiResetErrorCounter(MPU9250_SPI_INSTANCE);
+    if ((((int8_t)data[1]) == -1 && ((int8_t)data[0]) == -1) || spiGetErrorCounter(MPU9250_SPI_DEVICE) != 0) {
+        spiResetErrorCounter(MPU9250_SPI_DEVICE);
         failureMode(FAILURE_GYRO_INIT_FAILED);
     }
 }
@@ -151,7 +151,7 @@ static void mpu9250AccAndGyroInit(uint8_t lpf) {
 		return;
 	}
 
-    spiSetDivisor(MPU9250_SPI_INSTANCE, SPI_SLOW_CLOCK); //low speed for writing to slow registers
+    spiSetDivisor(MPU9250_SPI_DEVICE, SPI_SLOW_CLOCK); //low speed for writing to slow registers
 
     mpu9250WriteRegister(MPU_RA_PWR_MGMT_1, MPU9250_BIT_RESET);
 	delay(50);
@@ -192,7 +192,7 @@ bool mpu9250SpiDetect(void)
 	IOInit(mpuSpi9250CsPin, OWNER_SYSTEM, RESOURCE_SPI);
 	IOConfigGPIO(mpuSpi9250CsPin, SPI_IO_CS_CFG);
         
-    spiSetDivisor(MPU9250_SPI_INSTANCE, SPI_SLOW_CLOCK); //low speed
+    spiSetDivisor(MPU9250_SPI_DEVICE, SPI_SLOW_CLOCK); //low speed
     mpu9250WriteRegister(MPU_RA_PWR_MGMT_1, MPU9250_BIT_RESET);
 
     do {

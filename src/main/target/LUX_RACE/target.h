@@ -27,7 +27,7 @@
 #define BEEPER_INVERTED
 
 #define MPU9250_CS_PIN                   PA4
-#define MPU9250_SPI_INSTANCE             SPI1
+#define MPU9250_SPI_DEVICE               SPIDEV_1
 
 #define USE_EXTI
 #define MPU_INT_EXTI PA5

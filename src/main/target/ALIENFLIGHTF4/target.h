@@ -44,9 +44,9 @@
 #define USE_EXTI
 
 #define MPU6500_CS_PIN       PA4
-#define MPU6500_SPI_INSTANCE SPI1
+#define MPU6500_SPI_DEVICE   SPIDEV_1
 #define MPU9250_CS_PIN       PA4
-#define MPU9250_SPI_INSTANCE SPI1
+#define MPU9250_SPI_DEVICE   SPIDEV_1
 
 #define ACC
 #define USE_ACC_SPI_MPU6500
@@ -83,7 +83,7 @@
 #define SDCARD_DETECT_EXTI_PORT_SOURCE      EXTI_PortSourceGPIOB
 #define SDCARD_DETECT_EXTI_IRQn             EXTI15_10_IRQn
 
-#define SDCARD_SPI_INSTANCE                 SPI2
+#define SDCARD_SPI_DEVICE                   SPIDEV_2
 #define SDCARD_SPI_CS_PIN                   SPI2_NSS_PIN
 
 // SPI2 is on the APB1 bus whose clock runs at 84MHz. Divide to under 400kHz for init:
@@ -100,7 +100,7 @@
 // #define AFATFS_USE_INTROSPECTIVE_LOGGING
 
 //#define M25P16_CS_PIN        SPI2_NSS_PIN
-//#define M25P16_SPI_INSTANCE  SPI2
+//#define M25P16_SPI_DEVICE    SPIDEV_2
 
 //#define USE_FLASHFS
 //#define USE_FLASH_M25P16
