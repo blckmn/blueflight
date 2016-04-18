@@ -227,7 +227,7 @@ void pwmOneShotMotorConfig(const timerHardware_t *timerHardware, uint8_t motorIn
         motors[motorIndex] = pwmOutConfig(timerHardware, mhz, 0xFFFF, 0);
     }
     
-    motors[motorIndex]->pwmWritePtr = (protocol == MOTOR_PWM_PROTOCOL_MULTI) ? pwmWriteMultiShot : pwmWriteOneshot;
+    motors[motorIndex]->pwmWritePtr = (protocol == MOTOR_PWM_PROTOCOL_MULTI ? pwmWriteMultiShot : pwmWriteOneshot);
 }
 
 #ifdef USE_SERVOS

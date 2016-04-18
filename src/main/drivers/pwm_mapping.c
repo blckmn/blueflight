@@ -1378,12 +1378,12 @@ if (init->useBuzzerP6) {
 	        {
 	        case MOTOR_PWM_PROTOCOL_125: // oneshot125
 	        case MOTOR_PWM_PROTOCOL_42:  // oneshot42
-		        pwmOneShotMotorConfig(timerHardwarePtr, pwmOutputConfiguration.motorCount, init->motorPwmRate, init->motorPwmProtocol);
-		        pwmOutputConfiguration.portConfigurations[pwmOutputConfiguration.outputCount].flags = PWM_PF_MOTOR | PWM_PF_OUTPUT_PROTOCOL_ONESHOT | PWM_PF_OUTPUT_PROTOCOL_PWM;
-		        break;
 	        case MOTOR_PWM_PROTOCOL_MULTI: // multishot
 		        pwmOneShotMotorConfig(timerHardwarePtr, pwmOutputConfiguration.motorCount, init->motorPwmRate, init->motorPwmProtocol);
-		        pwmOutputConfiguration.portConfigurations[pwmOutputConfiguration.outputCount].flags = PWM_PF_MOTOR | PWM_PF_OUTPUT_PROTOCOL_MULTISHOT | PWM_PF_OUTPUT_PROTOCOL_PWM;
+		        pwmOutputConfiguration.portConfigurations[pwmOutputConfiguration.outputCount].flags = 
+        	        PWM_PF_MOTOR | 
+        	        (init->motorPwmProtocol == PWM_PF_OUTPUT_PROTOCOL_MULTISHOT ? PWM_PF_OUTPUT_PROTOCOL_MULTISHOT : PWM_PF_OUTPUT_PROTOCOL_ONESHOT) | 
+        	        PWM_PF_OUTPUT_PROTOCOL_PWM;
 		        break;
 	        case MOTOR_PWM_PROTOCOL_BRUSHED: 
 		        pwmBrushedMotorConfig(timerHardwarePtr, pwmOutputConfiguration.motorCount, init->motorPwmRate);

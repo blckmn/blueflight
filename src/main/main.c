@@ -303,11 +303,12 @@ void init(void)
         motorControlEnable = true;
 	}
     
-    if (!feature(FEATURE_3D))
-        pwm_params.idlePulse = masterConfig.escAndServoConfig.mincommand;
-    else
-        pwm_params.idlePulse = masterConfig.flight3DConfig.neutral3d;
-
+	if (feature(FEATURE_3D)) {
+    	pwm_params.idlePulse = masterConfig.flight3DConfig.neutral3d;
+	} else {
+    	pwm_params.idlePulse = masterConfig.escAndServoConfig.mincommand;
+	}
+    
     pwmOutputConfiguration_t *pwmOutputConfiguration = pwmInit(&pwm_params);
 
     mixerUsePWMOutputConfiguration(pwmOutputConfiguration);
@@ -325,6 +326,7 @@ void init(void)
         .isInverted = false
 #endif
     };
+
 #ifdef AFROMINI
     beeperConfig.isOD = false;   // AFROMINI override
     beeperConfig.isInverted = true;
