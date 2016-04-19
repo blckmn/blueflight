@@ -24,7 +24,6 @@
 #include "common/utils.h"
 
 #include "system.h"
-#include "gpio.h"
 
 #include "sound_beeper.h"
 
@@ -61,7 +60,7 @@ void beeperInit(const beeperConfig_t *config)
 	beeperInverted = config->isInverted;
 
 	if (beeperIO) {
-		IOInit(beeperIO, OWNER_SYSTEM, RESOURCE_OUTPUT);
+		IOInit(beeperIO, OWNER_BEEPER, RESOURCE_OUTPUT);
 		IOConfigGPIO(beeperIO, config->isOD ? IOCFG_OUT_OD : IOCFG_OUT_PP);
 	}
 	systemBeep(false);

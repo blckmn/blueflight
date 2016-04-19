@@ -106,7 +106,9 @@ typedef struct master_t {
 #endif
 
     beeperOffConditions_t beeper_off;
-
+#ifdef BEEPER
+    beeperConfig_t beeperConfig;
+#endif    
     uint8_t debug_mode;
     
     uint8_t magic_ef;                       // magic number, should be 0xEF

@@ -20,9 +20,11 @@ typedef enum {
 	OWNER_TIMER,
 	OWNER_SONAR,
 	OWNER_SYSTEM,
+    OWNER_BEEPER
 } resourceOwner_t;
 
 
+#define MAX_RESOURCE 8
 // Currently TIMER should be shared resource (softserial dualtimer and timerqueue needs to allocate timer channel, but pin can be used for other function)
 // with mode switching (shared serial ports, ...) this will need some improvement
 typedef enum {

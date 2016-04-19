@@ -315,33 +315,7 @@ void init(void)
     systemState |= SYSTEM_STATE_MOTORS_READY;
 
 #ifdef BEEPER
-    beeperConfig_t beeperConfig = {
-        .ioTag = IO_TAG(BEEPER),
-#ifdef BEEPER_INVERTED
-        .isOD = false,
-        .isInverted = true
-#else
-        .isOD = true,
-        .isInverted = false
-#endif
-    };
-#ifdef AFROMINI
-    beeperConfig.isOD = false;   // AFROMINI override
-    beeperConfig.isInverted = true;
-#endif
-#ifdef NAZE
-    if (hardwareRevision < NAZE32_REV5) {
-        // naze rev4 and below used opendrain to PNP for buzzer. Rev5 and above use PP to NPN.
-        beeperConfig.isOD = true;
-        beeperConfig.isInverted = true;
-    }
-#endif
-#ifdef CC3D
-    if (masterConfig.use_buzzer_p6 == 1)
-        beeperConfig.ioTag = IO_TAG(PA2);
-#endif
-
-    beeperInit(&beeperConfig);
+    beeperInit(&masterConfig.beeperConfig);
 #endif
 
 #ifdef INVERTER

@@ -44,6 +44,7 @@
 #include "drivers/pwm_rx.h"
 #include "drivers/gyro_sync.h"
 #include "drivers/sdcard.h"
+#include "drivers/sound_beeper.h"
 #include "drivers/buf_writer.h"
 #include "rx/rx.h"
 #include "rx/msp.h"

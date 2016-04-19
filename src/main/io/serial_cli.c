@@ -44,10 +44,12 @@
 #include "drivers/serial.h"
 #include "drivers/bus_i2c.h"
 #include "drivers/gpio.h"
+#include "drivers/io_impl.h"
 #include "drivers/timer.h"
 #include "drivers/pwm_mapping.h"
 #include "drivers/pwm_rx.h"
 #include "drivers/sdcard.h"
+#include "drivers/sound_beeper.h"
 
 #include "drivers/buf_writer.h"
 
@@ -117,6 +119,7 @@ static void cliPlaySound(char *cmdline);
 static void cliProfile(char *cmdline);
 static void cliRateProfile(char *cmdline);
 static void cliReboot(void);
+static void cliResources(char *cmdline);
 static void cliSave(char *cmdline);
 static void cliSerial(char *cmdline);
 
@@ -279,13 +282,11 @@ const clicmd_t cmdTable[] = {
         "\t<name>", cliMixer),
 #endif
     CLI_COMMAND_DEF("mmix", "custom motor mixer", NULL, cliMotorMix),
-    CLI_COMMAND_DEF("motor",  "get/set motor",
-       "<index> [<value>]", cliMotor),
-    CLI_COMMAND_DEF("play_sound", NULL,
-        "[<index>]\r\n", cliPlaySound),
-    CLI_COMMAND_DEF("profile", "change profile",
-        "[<index>]", cliProfile),
-	CLI_COMMAND_DEF("rateprofile", "change rate profile", "[<index>]", cliRateProfile),
+    CLI_COMMAND_DEF("motor",  "get/set motor", "<index> [<value>]", cliMotor),
+    CLI_COMMAND_DEF("play_sound", NULL, "[<index>]\r\n", cliPlaySound),
+    CLI_COMMAND_DEF("profile", "change profile", "[<index>]", cliProfile),
+    CLI_COMMAND_DEF("rateprofile", "change rate profile", "[<index>]", cliRateProfile),
+    CLI_COMMAND_DEF("resources", "Show resource allocation", NULL, cliResources),
     CLI_COMMAND_DEF("rxrange", "configure rx channel ranges", NULL, cliRxRange),
     CLI_COMMAND_DEF("rxfail", "show/set rx failsafe settings", NULL, cliRxFail),
     CLI_COMMAND_DEF("save", "save and reboot", NULL, cliSave),
@@ -467,14 +468,14 @@ typedef enum {
     TABLE_GIMBAL_MODE,
     TABLE_PID_CONTROLLER,
     TABLE_SERIAL_RX,
-	TABLE_RF_LOOP_CTRL,
+    TABLE_RF_LOOP_CTRL,
     TABLE_PWM_PROTOCOL,
     TABLE_GYRO_LPF,
     TABLE_ACC_HARDWARE,
     TABLE_BARO_HARDWARE,
     TABLE_MAG_HARDWARE,
     TABLE_DELTA_METHOD,
-	TABLE_DEBUG,
+    TABLE_DEBUG,
 } lookupTableIndex_e;
 
 static const lookupTableEntry_t lookupTables[] = {
@@ -508,21 +509,22 @@ static const lookupTableEntry_t lookupTables[] = {
 
 typedef enum {
     // value type
-    VAR_UINT8 = (0 << VALUE_TYPE_OFFSET),
-    VAR_INT8 = (1 << VALUE_TYPE_OFFSET),
-    VAR_UINT16 = (2 << VALUE_TYPE_OFFSET),
-    VAR_INT16 = (3 << VALUE_TYPE_OFFSET),
-    VAR_UINT32 = (4 << VALUE_TYPE_OFFSET),
-    VAR_FLOAT = (5 << VALUE_TYPE_OFFSET),
+    VAR_UINT8           = (0 << VALUE_TYPE_OFFSET),
+    VAR_INT8            = (1 << VALUE_TYPE_OFFSET),
+    VAR_UINT16          = (2 << VALUE_TYPE_OFFSET),
+    VAR_INT16           = (3 << VALUE_TYPE_OFFSET),
+    VAR_UINT32          = (4 << VALUE_TYPE_OFFSET),
+    VAR_FLOAT           = (5 << VALUE_TYPE_OFFSET),
 
     // value section
-    MASTER_VALUE = (0 << VALUE_SECTION_OFFSET),
-    PROFILE_VALUE = (1 << VALUE_SECTION_OFFSET),
-    CONTROL_RATE_VALUE = (2 << VALUE_SECTION_OFFSET),
+    MASTER_VALUE        = (0 << VALUE_SECTION_OFFSET),
+    PROFILE_VALUE       = (1 << VALUE_SECTION_OFFSET),
+    CONTROL_RATE_VALUE  = (2 << VALUE_SECTION_OFFSET),
 
     // value mode
-    MODE_DIRECT = (0 << VALUE_MODE_OFFSET),
-    MODE_LOOKUP = (1 << VALUE_MODE_OFFSET)
+    MODE_DIRECT         = (0 << VALUE_MODE_OFFSET),
+    MODE_LOOKUP         = (1 << VALUE_MODE_OFFSET),
+    MODE_PIN            = (2 << VALUE_MODE_OFFSET)
 } cliValueFlag_e;
 
 #define VALUE_TYPE_MASK (0x0F)
@@ -552,9 +554,7 @@ typedef struct {
 } clivalue_t;
 
 const clivalue_t valueTable[] = {
-//    { "emf_avoidance",              VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP,  &masterConfig.emf_avoidance, .config.lookup = { TABLE_OFF_ON } },
-
-	{ "mid_rc",                     VAR_UINT16 | MASTER_VALUE,  &masterConfig.rxConfig.midrc, .config.minmax = { 1200,  1700 } },
+    { "mid_rc",                     VAR_UINT16 | MASTER_VALUE,  &masterConfig.rxConfig.midrc, .config.minmax = { 1200,  1700 } },
     { "min_check",                  VAR_UINT16 | MASTER_VALUE,  &masterConfig.rxConfig.mincheck, .config.minmax = { PWM_RANGE_ZERO,  PWM_RANGE_MAX } },
     { "max_check",                  VAR_UINT16 | MASTER_VALUE,  &masterConfig.rxConfig.maxcheck, .config.minmax = { PWM_RANGE_ZERO,  PWM_RANGE_MAX } },
     { "rssi_channel",               VAR_INT8   | MASTER_VALUE,  &masterConfig.rxConfig.rssi_channel, .config.minmax = { 0,  MAX_SUPPORTED_RC_CHANNEL_COUNT } },
@@ -783,6 +783,10 @@ const clivalue_t valueTable[] = {
     { "magzero_x",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[X], .config.minmax = { -32768,  32767 } },
     { "magzero_y",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[Y], .config.minmax = { -32768,  32767 } },
     { "magzero_z",                  VAR_INT16  | MASTER_VALUE, &masterConfig.magZero.raw[Z], .config.minmax = { -32768,  32767 } },
+#ifdef BEEPER
+    { "beeper_pin",                 VAR_UINT8  | MASTER_VALUE | MODE_PIN, &masterConfig.beeperConfig.ioTag, .config.minmax = { 0, 255 } },
+    { "beeper_inverted",            VAR_UINT8  | MASTER_VALUE | MODE_LOOKUP, &masterConfig.beeperConfig.isInverted, .config.lookup = { TABLE_OFF_ON }},
+#endif
 };
 
 #define VALUE_COUNT (sizeof(valueTable) / sizeof(clivalue_t))
@@ -2037,7 +2041,6 @@ static void cliFeature(char *cmdline)
     }
 }
 
-
 #ifdef GPS
 static void cliGpsPassthrough(char *cmdline)
 {
@@ -2350,6 +2353,13 @@ static void cliPrintVar(const clivalue_t *var, uint32_t full)
         case MODE_LOOKUP:
             cliPrintf(lookupTables[var->config.lookup.tableIndex].values[value]);
             break;
+        case MODE_PIN:
+            if (value) {
+                cliPrintf("%c%02d", DEFIO_TAG_GPIOID(value) + 'A', DEFIO_TAG_PIN(value));
+            } else {
+                cliPrintf("NONE");
+            }
+            break;
     }
 }
 
@@ -2374,6 +2384,7 @@ static void cliPrintVarRange(const clivalue_t *var)
         break;
     }
 }
+
 static void cliSetVar(const clivalue_t *var, const int_float_value_t value)
 {
     void *ptr = var->ptr;
@@ -2478,6 +2489,31 @@ static void cliSet(char *cmdline)
                             }
                         }
                         break;
+                    case MODE_PIN: {
+                            uint8_t pin = 0;
+                            if (strlen(eqptr) > 0) {
+                                if (strcasecmp(eqptr, "NONE") == 0) {
+                                    tmp.int_value = 0;
+                                    changeValue = true;
+                                } else {
+                                    uint8_t port = (*eqptr)-'A';
+                                    if (port < 8) {
+                                        eqptr++;
+                                        pin = atoi(eqptr);
+                                        if (pin < 16) {
+                                            tmp.int_value = DEFIO_TAG_MAKE(port, pin);
+                                            ioRec_t *rec = IO_Rec(IOGetByTag(tmp.int_value)); 
+                                            if (rec && rec->owner == OWNER_FREE) {
+                                                changeValue = true;
+                                            } else {
+                                                cliPrintf("Resource is %s!", rec ? "in use" : "invalid");
+                                            }
+                                        }
+                                    }                            
+                                }
+                            }
+                        }
+                        break;
                 }
 
                 if (changeValue) {
@@ -2518,7 +2554,6 @@ static void cliGet(char *cmdline)
             matchedCommands++;
         }
     }
-
 
     if (matchedCommands) {
     	return;
@@ -2592,7 +2627,7 @@ static void cliTasks(char *cmdline)
 static void cliVersion(char *cmdline)
 {
     UNUSED(cmdline);
-    cliPrintf("# RaceFlight %s%s - %s /%s %s / %s (%s)",
+    cliPrintf("# RaceFlight %s%s - %s / %s %s / %s (%s)",
 		FC_VERSION_STRING,
 		FC_VERSION_LETTER,
 		FC_VERSION_COMMENT,
@@ -2601,6 +2636,69 @@ static void cliVersion(char *cmdline)
         buildTime,
         shortGitRevision
     );
+}
+
+const char * const ownerNames[] = {
+    "FREE",
+    "PWMIN",
+    "PPMIN",
+    "PWOUT_MOTOR",
+    "PWOUT_FAST",
+    "PWOUT_ONESHOT",
+    "PWOUT_SERVO",
+    "SOFTSERIAL_RX",
+    "SOFTSERIAL_TX",
+    "SOFTSERIAL_RXTX",        // bidirectional pin for softserial
+    "SOFTSERIAL_AUXTIMER",    // timer channel is used for softserial. No IO function on pin
+    "ADC",
+    "SERIAL_RX",
+    "SERIAL_TX",
+    "SERIAL_RXTX",
+    "PINDEBUG",
+    "TIMER",
+    "SONAR",
+    "SYSTEM",
+    "BEEPER",
+};
+
+const char * const resourceNames[] = {
+    "INPUT",
+    "OUTPUT",
+    "TIMER",
+    "TIMER_DUAL",
+    "USART",
+    "ADC", 
+    "EXTI",
+    "I2C",
+    "SPI", 
+};
+
+static void cliResources(char *cmdline)
+{
+    UNUSED(cmdline);
+    cliPrintf("IO:\r\n");
+    for (unsigned i = 0; i < DEFIO_IO_USED_COUNT; i++) {
+        const char* owner;
+        char buff[15];
+        if (ioRecs[i].owner < ARRAYLEN(ownerNames)) {
+            owner = ownerNames[ioRecs[i].owner];
+        }
+        else {
+            sprintf(buff, "O=%d", ioRecs[i].owner);
+            owner = buff;
+        }
+        cliPrintf("%c%02d: %12s -> ", IO_GPIOPortIdx(ioRecs + i) + 'A', IO_GPIOPinIdx(ioRecs + i), owner);
+        bool resourceDisplayed = false;
+        for (unsigned r = 0; r < MAX_RESOURCE; r++) {
+            if (ioRecs[i].resourcesUsed & 1 << r) {
+                cliPrintf("%s%s", resourceDisplayed ? ", " : "", resourceNames[r]);    
+                resourceDisplayed = true;
+            }
+        }
+        if (!resourceDisplayed)
+            cliPrintf("N/A");
+        cliPrintf("\r\n");
+    }
 }
 
 void cliProcess(void)

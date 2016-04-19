@@ -40,6 +40,7 @@
 #include "drivers/pwm_rx.h"
 #include "drivers/serial.h"
 #include "drivers/gyro_sync.h"
+#include "drivers/sound_beeper.h"
 
 #include "sensors/sensors.h"
 #include "sensors/gyro.h"
@@ -394,6 +395,16 @@ void resetMixerConfig(mixerConfig_t *mixerConfig) {
 #endif
 }
 
+#ifdef BEEPER
+void resetBeeperConfig(beeperConfig_t *beeperConfig) {
+    beeperConfig->ioTag = IO_TAG(BEEPER);
+#ifdef BEEPER_INVERTED
+    beeperConfig->isInverted = true;
+#else    beeperConfig->isInverted = false;
+#endif
+}
+#endif
+
 uint8_t getCurrentProfile(void)
 {
     return masterConfig.current_profile_index;
@@ -650,8 +661,10 @@ static void resetConf(void)
     masterConfig.serialConfig.portConfigs[CONFIG_RX_SERIAL_PORT].functionMask = FUNCTION_RX_SERIAL;
 #endif
 
-    // alternative defaults settings for ALIENFLIGHTF1 and ALIENFLIGHTF3 targets
-#ifdef ALIENFLIGHT
+#ifdef BEEPER
+    resetBeeperConfig(&masterConfig.beeperConfig);
+#endif
+    
     featureSet(FEATURE_MOTOR_STOP);
     masterConfig.rxConfig.spektrum_sat_bind = 5;
     masterConfig.escAndServoConfig.minthrottle = 1000;

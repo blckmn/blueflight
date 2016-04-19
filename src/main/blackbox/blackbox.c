@@ -39,6 +39,7 @@
 #include "drivers/pwm_rx.h"
 #include "drivers/accgyro.h"
 #include "drivers/light_led.h"
+#include "drivers/sound_beeper.h"
 
 #include "sensors/sensors.h"
 #include "sensors/boardalignment.h"
