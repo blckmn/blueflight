@@ -400,7 +400,8 @@ void resetBeeperConfig(beeperConfig_t *beeperConfig) {
     beeperConfig->ioTag = IO_TAG(BEEPER);
 #ifdef BEEPER_INVERTED
     beeperConfig->isInverted = true;
-#else    beeperConfig->isInverted = false;
+#else
+    beeperConfig->isInverted = false;
 #endif
 }
 #endif
@@ -665,13 +666,15 @@ static void resetConf(void)
     resetBeeperConfig(&masterConfig.beeperConfig);
 #endif
     
+// alternative defaults settings for ALIENFLIGHTF1 and ALIENFLIGHTF3 targets
+#ifdef ALIENFLIGHT   
     featureSet(FEATURE_MOTOR_STOP);
     masterConfig.rxConfig.spektrum_sat_bind = 5;
     masterConfig.escAndServoConfig.minthrottle = 1000;
     masterConfig.escAndServoConfig.maxthrottle = 2000;
     masterConfig.motor_pwm_protocol = MOTOR_PWM_PROTOCOL_BRUSHED;
     masterConfig.motor_pwm_rate = 32000;
-    currentProfile->pidProfile.pidController = 2;
+    currentProfile->pidProfile.pidController = PID_CONTROLLER_LUX_FLOAT;
 #ifdef ALIENFLIGHTF3
     masterConfig.batteryConfig.vbatscale = 20;
     masterConfig.mag_hardware = MAG_NONE;            // disabled by default

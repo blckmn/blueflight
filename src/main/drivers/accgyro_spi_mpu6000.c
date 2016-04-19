@@ -251,7 +251,8 @@ bool mpu6000SpiDetect(void)
 
 #ifdef MPU6000_CS_PIN     
     mpuSpi6000CsPin = IOGetByTag(IO_TAG(MPU6000_CS_PIN));
-#endif    IOInit(mpuSpi6000CsPin, OWNER_SYSTEM, RESOURCE_SPI);
+#endif
+    IOInit(mpuSpi6000CsPin, OWNER_SYSTEM, RESOURCE_SPI);
     IOConfigGPIO(mpuSpi6000CsPin, SPI_IO_CS_CFG);
     
     spiSetDivisor(MPU6000_SPI_INSTANCE, SPI_SLOW_CLOCK); //low speed

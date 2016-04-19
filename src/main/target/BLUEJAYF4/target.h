@@ -145,6 +145,17 @@
 #define VBAT_ADC_PIN           PC3
 #define VBAT_ADC_CHANNEL       ADC_Channel_13
 
+#define LED_STRIP
+// LED Strip can run off Pin 6 (PB0) of the ESC outputs.
+#define WS2811_GPIO_AF                  GPIO_AF_TIM3
+#define WS2811_PIN                      PB0 
+#define WS2811_TIMER                    TIM3
+#define WS2811_TIMER_APB1_PERIPHERAL    RCC_APB1Periph_TIM3
+#define WS2811_DMA_HANDLER_IDENTIFER    DMA1_ST2_HANDLER
+#define WS2811_DMA_STREAM               DMA1_Stream2
+#define WS2811_DMA_CHANNEL              DMA_Channel_6
+#define WS2811_DMA_IRQ                  DMA1_Stream2_IRQn
+    
 #define GPS
 #define BLACKBOX
 #define TELEMETRY
