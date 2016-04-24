@@ -794,13 +794,15 @@ void mixTable(void)
         int16_t throttleRange, throttle;
         int16_t throttleMin, throttleMax;
         static bool flightDirection3dReversed;
-
+        static int16_t throttleMinPrevious, throttleMaxPrevious, throttlePrevious = 0;        
+        
         throttleMin = 0;
         throttle = rcData[THROTTLE];
 
         // Find min and max throttle based on condition
         if (feature(FEATURE_3D)) {
-        	static int16_t throttleMinPrevious, throttleMaxPrevious, throttlePrevious;
+            if (!ARMING_FLAG(ARMED)) throttlePrevious = rxConfig->midrc; // When disarmed set to mid_rc. It always results in positive direction after arming.
+
             if (rcData[THROTTLE] <= (flight3DConfig->neutral3d - flight3DConfig->deadband3d_throttle)) {
             	throttleMax = flight3DConfig->deadband3d_low;
                 throttleMin = escAndServoConfig->minthrottle;

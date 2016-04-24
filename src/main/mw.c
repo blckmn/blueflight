@@ -192,12 +192,12 @@ void filterRc(void){
     initRxRefreshRate(&rxRefreshRate);
 
 	/* Initialize cycletime filter */
-	 if (!filterIsSet) {
-		 BiQuadNewLpf(1, &filteredCycleTimeState, 0);
-		 filterIsSet = true;
-	 }
+	if (!filterIsSet) {
+		BiQuadNewLpf(1, &filteredCycleTimeState, 0);
+		filterIsSet = true;
+	}
 
-         filteredCycleTime = applyBiQuadFilter((float) cycleTime, &filteredCycleTimeState);
+    filteredCycleTime = applyBiQuadFilter((float) cycleTime, &filteredCycleTimeState);
 
     rcInterpolationFactor = rxRefreshRate / filteredCycleTime + 1;
 
@@ -300,10 +300,21 @@ void annexCode(void)
             rcCommand[axis] = -rcCommand[axis];
     }
 
-    tmp = constrain(rcData[THROTTLE], masterConfig.rxConfig.mincheck, PWM_RANGE_MAX);
-    tmp = (uint32_t)(tmp - masterConfig.rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - masterConfig.rxConfig.mincheck);       // [MINCHECK;2000] -> [0;1000]
+	if (feature(FEATURE_3D)) {
+		tmp = constrain(rcData[THROTTLE], PWM_RANGE_MIN, PWM_RANGE_MAX);
+		tmp = (uint32_t)(tmp - PWM_RANGE_MIN);
+	} else {
+		tmp = constrain(rcData[THROTTLE], masterConfig.rxConfig.mincheck, PWM_RANGE_MAX);
+		tmp = (uint32_t)(tmp - masterConfig.rxConfig.mincheck) * PWM_RANGE_MIN / (PWM_RANGE_MAX - masterConfig.rxConfig.mincheck);
+	}
     tmp2 = tmp / 100;
     rcCommand[THROTTLE] = lookupThrottleRC[tmp2] + (tmp - tmp2 * 100) * (lookupThrottleRC[tmp2 + 1] - lookupThrottleRC[tmp2]) / 100;    // [0;1000] -> expo -> [MINTHROTTLE;MAXTHROTTLE]
+    
+    if (IS_RC_MODE_ACTIVE(BOX3DDISABLESWITCH) && !failsafeIsActive()) {
+        fix12_t throttleScaler = qConstruct(rcCommand[THROTTLE] - 1000, 1000);
+        rcCommand[THROTTLE] = masterConfig.rxConfig.midrc + qMultiply(throttleScaler, PWM_RANGE_MAX - masterConfig.rxConfig.midrc);
+    }
+    
     Throttle_p = constrainf( ((float)rcCommand[THROTTLE] - (float)masterConfig.rxConfig.mincheck) / ((float)masterConfig.rxConfig.maxcheck - (float)masterConfig.rxConfig.mincheck), 0, 100);
 
     if ( (Throttle_p > 0.1f) && (ARMING_FLAG(ARMED)) && (IS_RC_MODE_ACTIVE(BOXALWAYSSTABILIZED)) && (!isUsingSticksForArming()) ) {
