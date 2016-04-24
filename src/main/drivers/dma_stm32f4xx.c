@@ -40,10 +40,16 @@ void DMA1_Stream2_IRQHandler(void)
     dmaHandlers.dma1Stream2IRQHandler(DMA1_Stream2);
 }
 
+void DMA1_Stream7_IRQHandler(void)
+{
+    dmaHandlers.dma1Stream7IRQHandler(DMA1_Stream7);
+}
+
 void dmaInit(void)
 {
     memset(&dmaHandlers, 0, sizeof(dmaHandlers));
     dmaHandlers.dma1Stream2IRQHandler = dmaNoOpHandler;
+    dmaHandlers.dma1Stream7IRQHandler = dmaNoOpHandler;
 }
 
 void dmaSetHandler(dmaHandlerIdentifier_e identifier, dmaCallbackHandlerFuncPtr callback)
@@ -51,6 +57,9 @@ void dmaSetHandler(dmaHandlerIdentifier_e identifier, dmaCallbackHandlerFuncPtr 
     switch (identifier) {
         case DMA1_ST2_HANDLER:
             dmaHandlers.dma1Stream2IRQHandler = callback;
+            break;
+        case DMA1_ST7_HANDLER:
+            dmaHandlers.dma1Stream7IRQHandler = callback;
             break;
     }
 }
