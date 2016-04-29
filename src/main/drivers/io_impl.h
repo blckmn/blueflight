@@ -19,19 +19,14 @@ extern ioRec_t ioRecs[DEFIO_IO_USED_COUNT];
 
 int IO_GPIOPortIdx(IO_t io);
 int IO_GPIOPinIdx(IO_t io);
-#if defined(STM32F10X)
-int IO_GPIO_PinSource(IO_t io);
-int IO_GPIO_PortSource(IO_t io);
-#elif defined(STM32F303xC)
-int IO_GPIO_PinSource(IO_t io);
-int IO_GPIO_PortSource(IO_t io);
+
+#if defined(STM32F3) || defined(STM32F4)
 int IO_EXTI_PortSourceGPIO(IO_t io);
 int IO_EXTI_PinSource(IO_t io);
-#elif defined(STM32F40_41xxx) || defined(STM32F411xE)
+GPIO_TypeDef* IO_GPIO(IO_t io);
+#endif
+
 int IO_GPIO_PinSource(IO_t io);
 int IO_GPIO_PortSource(IO_t io);
-int IO_EXTI_PortSourceGPIO(IO_t io);
-int IO_EXTI_PinSource(IO_t io); 
-# endif
 uint32_t IO_EXTI_Line(IO_t io);
 ioRec_t *IO_Rec(IO_t io);

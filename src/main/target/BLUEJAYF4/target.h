@@ -146,6 +146,7 @@
 #define VBAT_ADC_CHANNEL       ADC_Channel_13
 
 #define LED_STRIP
+#define LED_STRIP_TIMER                 TIM3
 // LED Strip can run off Pin 6 (PB0) of the ESC outputs.
 #define WS2811_GPIO_AF                  GPIO_AF_TIM3
 #define WS2811_PIN                      PB0 

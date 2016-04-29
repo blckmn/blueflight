@@ -23,6 +23,8 @@
 #include "platform.h"
 
 #include "gpio.h"
+#include "io.h"
+#include "io_impl.h"
 #include "timer.h"
 
 #include "pwm_mapping.h"
@@ -1196,6 +1198,10 @@ if (init->useBuzzerP6) {
 #if defined(STM32F303xC) && defined(WS2811_GPIO) && defined(WS2811_PIN_SOURCE)
             if (timerHardwarePtr->gpio == WS2811_GPIO && timerHardwarePtr->gpioPinSource == WS2811_PIN_SOURCE)
                 continue;
+#elif defined(STM32F4) && defined(WS2811_PIN) 
+	        if (timerHardwarePtr->gpio == IO_GPIO(IOGetByTag(IO_TAG(WS2811_PIN)))
+    	        && timerHardwarePtr->gpioPinSource == IO_GPIO_PinSource(IOGetByTag(IO_TAG(WS2811_PIN))))
+		        continue;
 #endif
         }
 
