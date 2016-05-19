@@ -38,8 +38,8 @@
 
 void systemReset(void)
 {
-
-	resetGyro();
+    if (mpuConfiguration.reset)
+        mpuConfiguration.reset();
 
 	__disable_irq();
 	NVIC_SystemReset();
@@ -48,7 +48,8 @@ void systemReset(void)
 void systemResetToBootloader(void) {
 
 
-	resetGyro();
+    if (mpuConfiguration.reset)
+        mpuConfiguration.reset();
 
 	*((uint32_t *)0x2001FFFC) = 0xDEADBEEF; // 128KB SRAM STM32F4XX
 
